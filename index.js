@@ -1,4 +1,6 @@
 /* global $ ScrollMagic */
+document.addEventListener("DOMContentLoaded", (e) => {
+
 
 // Search-bar click to pass value to API calls and render results and init ScrollMagic and Accordian
 document.getElementById('search').addEventListener('click', function () {
@@ -199,3 +201,4 @@ document.getElementById('search').addEventListener('click', function () {
       </div>
       </div>
     `}
+  })
