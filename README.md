@@ -4,7 +4,7 @@
 
  # Team Members
 
-Ahmet Uysaler 
-/n Fatbardh Ibrahimi 
+Ahmet Uysaler, 
+Fatbardh Ibrahimi 
 
 
