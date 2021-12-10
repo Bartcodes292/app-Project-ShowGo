@@ -6,9 +6,14 @@ let historyEmpty = true;
 document.addEventListener("DOMContentLoaded", (e) => {
   fetchHistory();
   document.getElementById('search-bar').addEventListener('click', (e) => {
+    let artistQuery = document.getElementById('search-bar').value
     if(!historyEmpty){
-      wrapper.classList.add('show');
-    }
+      if(artistQuery === '') {
+        history.replaceChildren('');
+        fetchHistory();
+      }
+        wrapper.classList.add('show');
+      }
   })
   document.getElementById('search-bar').addEventListener('keyup', (e) => {
     let artistQuery = document.getElementById('search-bar').value
@@ -25,6 +30,12 @@ document.addEventListener("DOMContentLoaded", (e) => {
         }
       }
     }
+    if(results.length === 0){
+      wrapper.classList.remove('show');
+    }
+    else {
+      wrapper.classList.add('show');
+    }
   })
 // Search-bar click to pass value to API calls and render results and init ScrollMagic and Accordian
   document.getElementById('search').addEventListener('click', function () {
@@ -32,7 +43,7 @@ document.addEventListener("DOMContentLoaded", (e) => {
     var resultsContainerEl = document.getElementById('results-container')
     resultsContainerEl.innerHTML = ''
     count = 2
-    callTastedive()
+    callTastedive();
     wrapper.classList.remove('show');
     if(!historyEmpty){
       const results = document.getElementsByTagName('li');
@@ -263,6 +274,7 @@ document.addEventListener("DOMContentLoaded", (e) => {
       })
     .then(resp => resp.json())
     .then(json => {
+      historyEmpty = false;
       //history.append(li);
     })
     }
