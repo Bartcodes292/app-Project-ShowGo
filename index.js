@@ -1,14 +1,56 @@
 /* global $ ScrollMagic */
+const history = document.getElementById('history');
+const wrapper = document.querySelector('.wrapper');
+let histortyEmpty = true;
+
 document.addEventListener("DOMContentLoaded", (e) => {
-
-
+  fetchHistory();
+  document.getElementById('search-bar').addEventListener('click', (e) => {
+    wrapper.classList.add('show');
+  })
+  document.getElementById('search-bar').addEventListener('keyup', (e) => {
+    let artistQuery = document.getElementById('search-bar').value
+    const results = document.getElementsByTagName('li');
+    if (artistQuery === '') {
+      history.replaceChildren('');
+      fetchHistory();
+    }
+    {
+      for(var i = 0; i <= results.length-1; i++){
+        if(!compareSearch(artistQuery, results[i].innerText)){
+          results[i].remove();
+          i = -1;
+        }
+      }
+    }
+  })
 // Search-bar click to pass value to API calls and render results and init ScrollMagic and Accordian
-document.getElementById('search').addEventListener('click', function () {
+  document.getElementById('search').addEventListener('click', function () {
+    let artistQuery = document.getElementById('search-bar').value
     var resultsContainerEl = document.getElementById('results-container')
     resultsContainerEl.innerHTML = ''
     count = 2
     callTastedive()
-  })
+    wrapper.classList.remove('show');
+    if(!histortyEmpty){
+      const results = document.getElementsByTagName('li');
+      let inHistory = false;
+      for(var i = 0; i <= results.length-1; i++){
+        if(results[i].textContent === artistQuery){
+          inHistory = true;
+        }
+      }
+      if(!inHistory){
+        rememberSearch(artistQuery);
+      }
+    } else {
+      histortyEmpty = false;
+      rememberSearch(artistQuery)
+    }
+    document.getElementById('search-bar').value = '';
+    history.replaceChildren('');
+      fetchHistory();
+   })
   /// TasteDive API call
   function callTastedive () {
     var tastedive = 'https://tastedive.com/api/similar?q='
@@ -202,3 +244,64 @@ document.getElementById('search').addEventListener('click', function () {
       </div>
     `}
   })
+  function rememberSearch(input) { 
+    if(input !== ""){
+    const obj = {
+      artist : input
+    }
+    const li = document.createElement('li');
+    li.innerText = input;
+  fetch("http://localhost:3000/searched", {
+   method: "POST",
+   headers: {
+     "Content-Type": "application/json",
+   },
+   body: JSON.stringify(obj), 
+  })
+  .then(resp => resp.json())
+  .then(json => {
+    history.append(li);
+  })
+  }
+  }
+  function showHistory(input) {
+    
+
+  }
+  function fetchHistory() {
+    fetch("http://localhost:3000/searched")
+  .then(resp => resp.json())
+  .then(json => {
+    if(json.length >= 1) {
+      json.forEach(artist => {
+        histortyEmpty = false;
+        const li = document.createElement('li');
+        li.textContent = artist.artist;
+        li.addEventListener('click', (e) => {
+          document.getElementById('search-bar').value = e.target.innerText;
+        })
+        history.append(li);
+      })
+    } else {
+      histortyEmpty = true;
+    }
+  })
+  }
+  function compareSearch(input, searched) {
+    const inp = input.length;
+    let s = '';
+    if(inp === 1) {
+      s += searched[0];
+    }
+    else {
+    for(var i = 0; i <= inp-1; i++) {
+      s += searched[i];
+    }
+    }
+    if(input === s) {
+      return true;
+    }
+    else {
+      return false;
+    }
+  }
