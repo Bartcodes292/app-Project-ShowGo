@@ -263,7 +263,7 @@ document.addEventListener("DOMContentLoaded", (e) => {
       })
     .then(resp => resp.json())
     .then(json => {
-      history.append(li);
+      //history.append(li);
     })
     }
   }
