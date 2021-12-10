@@ -1,12 +1,14 @@
 /* global $ ScrollMagic */
 const history = document.getElementById('history');
 const wrapper = document.querySelector('.wrapper');
-let histortyEmpty = true;
+let historyEmpty = true;
 
 document.addEventListener("DOMContentLoaded", (e) => {
   fetchHistory();
   document.getElementById('search-bar').addEventListener('click', (e) => {
-    wrapper.classList.add('show');
+    if(!historyEmpty){
+      wrapper.classList.add('show');
+    }
   })
   document.getElementById('search-bar').addEventListener('keyup', (e) => {
     let artistQuery = document.getElementById('search-bar').value
@@ -32,7 +34,7 @@ document.addEventListener("DOMContentLoaded", (e) => {
     count = 2
     callTastedive()
     wrapper.classList.remove('show');
-    if(!histortyEmpty){
+    if(!historyEmpty){
       const results = document.getElementsByTagName('li');
       let inHistory = false;
       for(var i = 0; i <= results.length-1; i++){
@@ -44,12 +46,13 @@ document.addEventListener("DOMContentLoaded", (e) => {
         rememberSearch(artistQuery);
       }
     } else {
-      histortyEmpty = false;
+      historyEmpty = false;
       rememberSearch(artistQuery)
     }
     document.getElementById('search-bar').value = '';
     history.replaceChildren('');
       fetchHistory();
+      historyEmpty = false;
    })
   /// TasteDive API call
   function callTastedive () {
@@ -251,22 +254,18 @@ document.addEventListener("DOMContentLoaded", (e) => {
     }
     const li = document.createElement('li');
     li.innerText = input;
-  fetch("http://localhost:3000/searched", {
-   method: "POST",
-   headers: {
-     "Content-Type": "application/json",
-   },
-   body: JSON.stringify(obj), 
-  })
-  .then(resp => resp.json())
-  .then(json => {
-    history.append(li);
-  })
-  }
-  }
-  function showHistory(input) {
-    
-
+    fetch("http://localhost:3000/searched", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(obj), 
+      })
+    .then(resp => resp.json())
+    .then(json => {
+      history.append(li);
+    })
+    }
   }
   function fetchHistory() {
     fetch("http://localhost:3000/searched")
@@ -274,7 +273,7 @@ document.addEventListener("DOMContentLoaded", (e) => {
   .then(json => {
     if(json.length >= 1) {
       json.forEach(artist => {
-        histortyEmpty = false;
+        historyEmpty = false;
         const li = document.createElement('li');
         li.textContent = artist.artist;
         li.addEventListener('click', (e) => {
@@ -283,7 +282,7 @@ document.addEventListener("DOMContentLoaded", (e) => {
         history.append(li);
       })
     } else {
-      histortyEmpty = true;
+      historyEmpty = true;
     }
   })
   }
